@@ -49,8 +49,7 @@
 		<div class="notice">
 			<div class="col-md-3" style="margin-left: 2%">
 				<%
-				p
-
+				
 				Connection con = DBUtil.provideConnection();
 				%>
 
