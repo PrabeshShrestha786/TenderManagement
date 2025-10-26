@@ -57,7 +57,7 @@
 						</ul>
 					</li>
 
-					<li><a href="register.jsp">Register</a></li>
+					<!-- <li><a href="register.jsp">Register</a></li> -->
 <!-- 
 					<li>
 						Form for searching any tenders or items

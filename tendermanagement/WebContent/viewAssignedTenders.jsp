@@ -1,171 +1,165 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
-<%@page
-	import="java.sql.*,java.lang.Integer,java.lang.String, com.hit.beans.TenderStatusBean,com.hit.utility.DBUtil,java.util.List,com.hit.dao.TenderDaoImpl,com.hit.dao.TenderDao, javax.servlet.annotation.WebServlet"
-	errorPage="errorpage.jsp"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+    pageEncoding="ISO-8859-1"%>
+<%@page import="java.sql.*,com.hit.beans.TenderStatusBean,com.hit.utility.DBUtil,java.util.List,com.hit.dao.TenderDaoImpl,com.hit.dao.TenderDao" errorPage="errorpage.jsp"%>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <link rel="shortcut icon" type="image/png" href="images/Banner_Hit.png">
-<!--link rel="shortcut icon" type="image/ico" href="images/hit_fevicon.ico"-->
-
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vaasan Tender</title>
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/annimate.css">
-<link href="css/font-awesome.min.css" type="text/css" rel="stylesheet">
-<link href="css/SpryTabbedPanels.css" type="text/css" rel="stylesheet">
-<!--link rel="stylesheet" href="css/styles.css"-->
-<link href="https://fonts.googleapis.com/css?family=Black+Ops+One"
-	rel="stylesheet">
-<link href="css/bootstrap-dropdownhover.min.css">
+<link href="css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style2.css">
+
+<!-- 🧩 All styling inside this file -->
 <style>
-th, tr {
-	height: 50px;
-	border: 2px black solid;
+/* Container layout */
+body {
+    background-color: #ffe6cc;
+    font-family: Arial, sans-serif;
 }
 
-td {
-	min-width: 145px;
-	border: 2px dashed black;
+/* Headings and table labels */
+#show {
+    min-width: 850px;
+    background-color: white;
+    color: red;
+    text-align: center;
+    font-size: 20px;
+    padding: 10px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    margin-top: 10px;
 }
 
+/* Table wrapper for responsiveness */
+.table-container {
+    overflow-x: auto;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Table styling */
 table {
-	text-align: center;
-	border-radius: 10px;
-	border: 1px red solid;
-	text-align: center;
-	background-color: cyan;
-	margin: 20px;
-	color: blue;
-	font-style: normal;
-	font-size: 15.5px;
-	padding: 20px;
-	cellpadding: 10;
-	cellspacing: 10;
+    border-collapse: collapse;
+    width: 95%;
+    margin: auto;
+    background-color: white;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    font-size: 15.5px;
 }
 
+/* Table header */
+th, td {
+    padding: 10px 15px;
+    border: 2px solid #000;
+    word-wrap: break-word;
+}
+
+/* Header row */
+tr:first-child {
+    background-color: brown;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Hover effect */
 tr:hover {
-	background-color: #DEBEE1;
-	color: black;
+    background-color: #DEBEE1;
+    color: black;
 }
 
+/* Links inside the table */
+table a {
+    color: blue;
+    text-decoration: none;
+}
+table a:hover {
+    text-decoration: underline;
+    color: darkred;
+}
+
+/* No data row */
+.no-data {
+    color: red;
+    text-align: center;
+    font-weight: bold;
+    background-color: #fff3e6;
+}
+
+/* Buttons hover (if any in future) */
 button:hover {
-	background-color: red;
-	color: white;
+    background-color: red;
+    color: white;
 }
 </style>
 </head>
 <body>
+<%
+String user = (String) session.getAttribute("user");
+String uname = (String) session.getAttribute("username");
+String pword = (String) session.getAttribute("password");
+if (user == null || !user.equalsIgnoreCase("admin") || uname.equals("") || pword.equals("")) {
+    response.sendRedirect("loginFailed.jsp");
+}
+%>
 
+<jsp:include page="header.jsp"></jsp:include>
+<jsp:include page="adminMenu.jsp"></jsp:include>
+<jsp:include page="marquee.jsp"></jsp:include>
 
-	<%
-	String user = (String) session.getAttribute("user");
-	String uname = (String) session.getAttribute("username");
-	String pword = (String) session.getAttribute("password");
+<div class="container-fluid">
+    <div class="col-md-3" style="margin-left: 2%">
+        <jsp:include page="notice.jsp"></jsp:include><br>
+    </div>
 
-	if (user == null || !user.equalsIgnoreCase("admin") || uname.equals("") || pword.equals("")) {
+    <div class="col-md-8">
+        <div id="show">All Assigned Tenders List</div>
 
-		response.sendRedirect("loginFailed.jsp");
+        <!-- 🧩 Responsive table container -->
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>Tender Id</th>
+                    <th>Tender Name</th>
+                    <th>Vendor Id</th>
+                    <th>Vendor Name</th>
+                    <th>Application Id</th>
+                    <th>Status</th>
+                </tr>
 
-	}
-	%>
+                <%
+                TenderDao dao = new TenderDaoImpl();
+                List<TenderStatusBean> statusList = dao.getAllAssignedTenders();
+                if (statusList.isEmpty()) {
+                %>
+                    <tr><td colspan="6" class="no-data">No Tenders Assigned Yet</td></tr>
+                <%
+                } else {
+                    for (TenderStatusBean status : statusList) {
+                %>
+                <tr>
+                    <td><a href="viewTenderBidsForm.jsp?tid=<%=status.getTendorId()%>"><%=status.getTendorId()%></a></td>
+                    <td><%=status.getTenderName()%></td>
+                    <td><a href="adminViewVendorDetail.jsp?vid=<%=status.getVendorId()%>"><%=status.getVendorId()%></a></td>
+                    <td><%=status.getVendorName()%></td>
+                    <td><%=status.getBidderId()%></td>
+                    <td><%=status.getStatus()%></td>
+                </tr>
+                <%
+                    }
+                }
+                %>
+            </table>
+        </div>
+    </div>
+</div>
 
-
-	<!-- Including the header of the page  -->
-
-	<jsp:include page="header.jsp"></jsp:include>
-
-	<jsp:include page="adminMenu.jsp"></jsp:include>
-
-	<jsp:include page="marquee.jsp"></jsp:include>
-	<div class="container-fluid">
-
-		<div class="notice">
-			<div class="col-md-3" style="margin-left: 2%">
-				
-				<%
-			Connection con = DBUtil.provideConnection();
-			%>
-
-				<jsp:include page="notice.jsp"></jsp:include><br>
-
-				<!-- Next marquee starting-->
-				<%-- <jsp:include page="approved.jsp"></jsp:include><br> --%>
-
-			</div>
-			<!-- End of col-md-3-->
-		</div>
-		<!-- End of notice class-->
-
-
-		<!-- Next part of same container-fluid in which galary or other information will be shown-->
-
-
-		<div class="col-md-8">
-
-			<table style="border-radius: 10px">
-				<tr>
-					<td id="show"
-						style="min-width: 850px; background-color: white; min-height: 0px; color: red">All
-						Assigned Tenders List</td>
-				</tr>
-			</table>
-
-
-			<table style="background-color: white; margin-left: 30%;">
-				<tr
-					style="color: white; font-size: 18px; font-weight: bold; background-color: brown">
-					<td>Tender Id</td>
-					<td>Vendor Id</td>
-					<td>Application Id</td>
-					<td>Status</td>
-				</tr>
-				<%
-				TenderDao dao = new TenderDaoImpl();
-				List<TenderStatusBean> statusList = dao.getAllAssignedTenders();
-
-				for (TenderStatusBean status : statusList) {
-				%>
-
-
-				<tr>
-					<td><a
-						href="viewTenderBidsForm.jsp?tid=<%=status.getTendorId()%>"><%=status.getTendorId()%></a></td>
-					<td><a
-						href="adminViewVendorDetail.jsp?vid=<%=status.getVendorId()%>"><%=status.getVendorId()%></a></td>
-					<td><%=status.getBidderId()%></td>
-					<td><%=status.getStatus()%></td>
-				</tr>
-
-
-
-				<%
-				}
-				%>
-			</table>
-
-			<!-- </div>
-     </div> -->
-		</div>
-
-	</div>
-	<!-- End of container-fluid-->
-
-
-	<!-- <div class="container" style="height:300px">
-	ucomment this if you want to add some space in the lower part of page
-	</div> -->
-
-
-
-	<!-- Now from here the footer section starts-->
-
-	<!-- Including the footer of the page -->
-
-	<jsp:include page="footer.jsp"></jsp:include>
+<jsp:include page="footer.jsp"></jsp:include>
 </body>
 </html>

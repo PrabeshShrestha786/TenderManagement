@@ -32,7 +32,7 @@
             </div>
          
             <ul class="nav navbar-nav navbar-right menusize pull-right">   <!-- Login or signup in right top corner-->
-              
+              <li><a href="register.jsp"><span class="glyphicon glyphicon-user "></span>Register Vendor</a></li>
               <li><a href="LogoutSrv"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
             </ul>
          
