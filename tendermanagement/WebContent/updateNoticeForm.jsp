@@ -53,7 +53,7 @@
      		<jsp:include page="notice.jsp"></jsp:include><br>
      		
           <!-- Next marquee starting-->
-          <jsp:include page="approved.jsp"></jsp:include><br>
+          <%-- <jsp:include page="approved.jsp"></jsp:include><br> --%>
           
         </div>  <!-- End of col-md-3-->
       </div> <!-- End of notice class-->
