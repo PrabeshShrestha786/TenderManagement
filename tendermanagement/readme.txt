@@ -21,7 +21,7 @@ Back-End Development
 ====== Importing and Running the Project Through Eclipse EE ===========
 Step 0: Open Eclipse Enterprise Edition. [Install if not available]
 
-Step 1: Click On File > Import > Git > Projects From Git > Clone Uri > Paste The Repository Url: https://github.com/shashirajraja/Tender-Management-System.git > Next > Select Master Branch > Select Tender-Management-System\tendermanagement (Eclipse Project) > Next > Finish
+Step 1: Click On File > Import > Git > Projects From Git > Clone Uri > Paste The Repository Url: https://github.com/PrabeshShrestha786/TenderManagement.git > Next > Select Master Branch > Select Tender-Management-System\tendermanagement (Eclipse Project) > Next > Finish
 
 Step 2.a: Go inside tendermanagement > Java Resources > dbdetails.properties and update the value of username and password according to your installed mysql admin credentials
 
